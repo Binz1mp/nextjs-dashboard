@@ -19,12 +19,12 @@ export async function fetchRevenue() {
     // Artificially delay a response for demo purposes.
     // Don't do this in production :)
 
-    console.log('Fetching revenue data...');
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    // console.log('Fetching revenue data...');
+    // await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const data = await sql<Revenue>`SELECT * FROM revenue`;
 
-    console.log('Data fetch completed after 3 seconds.');
+    // console.log('Data fetch completed after 3 seconds.');
 
     return data.rows;
   } catch (error) {
@@ -37,8 +37,8 @@ export async function fetchLatestInvoices() {
   noStore();
   try {
 
-    console.log('Fetching latestInvoices data...');
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // console.log('Fetching latestInvoices data...');
+    // await new Promise((resolve) => setTimeout(resolve, 2000));
 
     const data = await sql<LatestInvoiceRaw>`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
@@ -47,7 +47,7 @@ export async function fetchLatestInvoices() {
       ORDER BY invoices.date DESC
       LIMIT 5`;
 
-    console.log('Data fetch completed after 2 seconds');
+    // console.log('Data fetch completed after 2 seconds');
 
     const latestInvoices = data.rows.map((invoice) => ({
       ...invoice,
@@ -173,7 +173,7 @@ export async function fetchInvoiceById(id: string) {
       // Convert amount from cents to dollars
       amount: invoice.amount / 100,
     }));
-
+    console.log(invoice); // Invoice is an empty array []
     return invoice[0];
   } catch (error) {
     console.error('Database Error:', error);
@@ -240,5 +240,25 @@ export async function getUser(email: string) {
   } catch (error) {
     console.error('Failed to fetch user:', error);
     throw new Error('Failed to fetch user.');
+  }
+}
+
+
+
+export async function getCustomerList() {
+  noStore();
+  try {
+    const customerList = await sql`SELECT
+      id,
+      name,
+      email,
+      image_url
+    FROM customers
+    ORDER BY name ASC`;
+
+    return customerList.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch customer list');
   }
 }
